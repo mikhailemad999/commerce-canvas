@@ -2,15 +2,18 @@ import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import CategorySidebar from "@/components/CategorySidebar";
 import ProductCard from "@/components/ProductCard";
+import ProductSkeleton from "@/components/ProductSkeleton";
 import CartDrawer from "@/components/CartDrawer";
 import HeroBanner from "@/components/HeroBanner";
-import { products } from "@/lib/data";
+import { useProducts } from "@/hooks/use-products";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const { data: products = [], isLoading } = useProducts();
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
@@ -22,7 +25,7 @@ const Index = () => {
       const matchesCat = !selectedCategory || p.category === selectedCategory;
       return matchesSearch && matchesCat;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, products]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,7 +49,6 @@ const Index = () => {
         <main className="flex-1 p-4 md:p-6 lg:p-8">
           <HeroBanner />
 
-          {/* Results info */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-muted-foreground">
               {filtered.length} product{filtered.length !== 1 ? "s" : ""}
@@ -55,8 +57,13 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Product grid */}
-          {filtered.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
+          ) : filtered.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {filtered.map((product, i) => (
                 <div key={product.id} className="animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
