@@ -1,7 +1,8 @@
-import { Search, ShoppingCart, User, Menu, Heart, X } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, Heart, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -13,6 +14,7 @@ interface NavbarProps {
 
 const Navbar = ({ onSearch, onCartOpen, onMenuToggle }: NavbarProps) => {
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
@@ -24,17 +26,14 @@ const Navbar = ({ onSearch, onCartOpen, onMenuToggle }: NavbarProps) => {
     <header className="sticky top-0 z-50 bg-surface-elevated border-b border-border backdrop-blur-md">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-4 h-16">
-          {/* Menu toggle */}
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenuToggle}>
             <Menu className="h-5 w-5" />
           </Button>
 
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <span className="font-display text-xl md:text-2xl font-bold text-gold tracking-wide">LUXE</span>
           </Link>
 
-          {/* Search */}
           <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden sm:flex">
             <div className="relative w-full">
               <Input
@@ -52,14 +51,25 @@ const Navbar = ({ onSearch, onCartOpen, onMenuToggle }: NavbarProps) => {
             </div>
           </form>
 
-          {/* Actions */}
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-gold hidden sm:flex">
               <Heart className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-gold">
-              <User className="h-5 w-5" />
-            </Button>
+
+            {user ? (
+              <Link to="/profile">
+                <Button variant="ghost" size="icon" className="text-gold hover:text-gold/80">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-gold">
+                  <LogIn className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+
             <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-gold" onClick={onCartOpen}>
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
@@ -71,7 +81,6 @@ const Navbar = ({ onSearch, onCartOpen, onMenuToggle }: NavbarProps) => {
           </div>
         </div>
 
-        {/* Mobile search */}
         <form onSubmit={handleSearch} className="sm:hidden pb-3">
           <div className="relative">
             <Input
