@@ -1,4 +1,4 @@
-import { categories } from "@/lib/data";
+import { useCategories } from "@/hooks/use-products";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,10 @@ interface CategorySidebarProps {
 }
 
 const CategorySidebar = ({ selectedCategory, onSelectCategory, isOpen, onClose }: CategorySidebarProps) => {
+  const { data: categories = [] } = useCategories();
+
   return (
     <>
-      {/* Overlay */}
       {isOpen && (
         <div className="fixed inset-0 bg-background/80 z-40 lg:hidden" onClick={onClose} />
       )}
@@ -62,7 +63,6 @@ const CategorySidebar = ({ selectedCategory, onSelectCategory, isOpen, onClose }
           ))}
         </nav>
 
-        {/* Price filter */}
         <div className="mt-8">
           <h3 className="font-display text-sm text-gold mb-3">Quick Filters</h3>
           <div className="space-y-1">
