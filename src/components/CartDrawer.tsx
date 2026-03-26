@@ -74,8 +74,8 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               <span className="font-medium">Total</span>
               <span className="font-display text-xl text-gold">${totalPrice.toFixed(2)}</span>
             </div>
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11 font-semibold">
-              Proceed to Checkout
+            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11 font-semibold" asChild>
+              <Link to="/checkout" onClick={onClose}>Proceed to Checkout</Link>
             </Button>
           </div>
         )}
