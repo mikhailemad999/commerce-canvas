@@ -52,9 +52,11 @@ const Navbar = ({ onSearch, onCartOpen, onMenuToggle }: NavbarProps) => {
           </form>
 
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-gold hidden sm:flex">
-              <Heart className="h-5 w-5" />
-            </Button>
+            <Link to="/wishlist">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-gold hidden sm:flex">
+                <Heart className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {user ? (
               <Link to="/profile">

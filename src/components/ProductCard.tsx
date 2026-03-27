@@ -1,8 +1,10 @@
 import { Product } from "@/lib/types";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
-import { Link } from "react-router-dom";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { useAuth } from "@/context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
@@ -10,7 +12,11 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
   const discountedPrice = product.price * (1 - product.discount / 100);
+  const wishlisted = isInWishlist(product.id);
 
   return (
     <div className="group bg-card border border-border rounded-lg overflow-hidden card-hover">
@@ -26,8 +32,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
             -{product.discount}%
           </span>
         )}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (!user) { navigate("/login"); return; }
+            toggleWishlist(product.id);
+          }}
+          className="absolute top-3 right-3 bg-background/70 backdrop-blur-sm p-1.5 rounded-full transition-colors hover:bg-background/90"
+        >
+          <Heart className={`h-4 w-4 ${wishlisted ? "text-destructive fill-destructive" : "text-foreground"}`} />
+        </button>
         {product.stock < 10 && (
-          <span className="absolute top-3 right-3 bg-destructive/90 text-destructive-foreground text-xs px-2 py-1 rounded-full">
+          <span className="absolute bottom-3 right-3 bg-destructive/90 text-destructive-foreground text-xs px-2 py-1 rounded-full">
             Low stock
           </span>
         )}

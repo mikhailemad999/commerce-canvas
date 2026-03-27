@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Product, Category } from "@/lib/types";
+import { getProductImage } from "@/lib/product-images";
 
 export function useProducts() {
   return useQuery({
@@ -22,7 +23,7 @@ export function useProducts() {
         stock: p.stock,
         rating: Number(p.rating),
         reviewCount: p.review_count,
-        images: p.images ?? ["/placeholder.svg"],
+        images: [getProductImage(p.id, (p.images ?? ["/placeholder.svg"])[0])],
       }));
     },
   });
@@ -51,7 +52,7 @@ export function useProduct(id: string | undefined) {
         stock: data.stock,
         rating: Number(data.rating),
         reviewCount: data.review_count,
-        images: data.images ?? ["/placeholder.svg"],
+        images: [getProductImage(data.id, (data.images ?? ["/placeholder.svg"])[0])],
       };
     },
   });
