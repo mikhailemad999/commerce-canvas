@@ -2,6 +2,10 @@ import { Product } from "@/lib/types";
 import { Star, ShoppingCart, Heart, Truck, Shield, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import ReviewSection from "@/components/ReviewSection";
 import { useState } from "react";
 
 interface ProductDetailProps {
@@ -11,8 +15,12 @@ interface ProductDetailProps {
 
 const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
   const { addToCart } = useCart();
+  const { user } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const discountedPrice = product.price * (1 - product.discount / 100);
+  const wishlisted = isInWishlist(product.id);
 
   return (
     <div className="animate-fade-in">
@@ -71,8 +79,16 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
               <ShoppingCart className="h-4 w-4 mr-2" />
               Add to Cart
             </Button>
-            <Button variant="outline" size="icon" className="h-11 w-11 border-border text-muted-foreground hover:text-gold hover:border-gold">
-              <Heart className="h-5 w-5" />
+            <Button
+              variant="outline"
+              size="icon"
+              className={`h-11 w-11 border-border hover:border-gold ${wishlisted ? "text-destructive border-destructive" : "text-muted-foreground hover:text-gold"}`}
+              onClick={() => {
+                if (!user) { navigate("/login"); return; }
+                toggleWishlist(product.id);
+              }}
+            >
+              <Heart className={`h-5 w-5 ${wishlisted ? "fill-destructive" : ""}`} />
             </Button>
           </div>
 
@@ -91,6 +107,8 @@ const ProductDetail = ({ product, onBack }: ProductDetailProps) => {
           </div>
         </div>
       </div>
+
+      <ReviewSection productId={product.id} />
     </div>
   );
 };
